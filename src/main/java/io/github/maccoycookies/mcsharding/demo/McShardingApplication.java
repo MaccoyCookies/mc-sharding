@@ -1,7 +1,9 @@
-package io.github.maccoycookies.mcsharding;
+package io.github.maccoycookies.mcsharding.demo;
 
-import io.github.maccoycookies.mcsharding.demo.User;
-import io.github.maccoycookies.mcsharding.demo.UserMapper;
+import io.github.maccoycookies.mcsharding.demo.config.ShardingAutoConfiguration;
+import io.github.maccoycookies.mcsharding.demo.mybatis.ShardingMapperFactoryBean;
+import io.github.maccoycookies.mcsharding.demo.mapper.UserMapper;
+import io.github.maccoycookies.mcsharding.demo.model.User;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -12,7 +14,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(ShardingAutoConfiguration.class)
-@MapperScan(value = "io.github.maccoycookies.mcsharding.demo", factoryBean = ShardingMapperFactoryBean.class)
+@MapperScan(value = "io.github.maccoycookies.mcsharding.demo.mapper", factoryBean = ShardingMapperFactoryBean.class)
 public class McShardingApplication {
 
     public static void main(String[] args) {

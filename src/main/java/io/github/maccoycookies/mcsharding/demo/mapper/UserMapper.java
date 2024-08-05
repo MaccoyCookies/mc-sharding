@@ -1,5 +1,6 @@
-package io.github.maccoycookies.mcsharding.demo;
+package io.github.maccoycookies.mcsharding.demo.mapper;
 
+import io.github.maccoycookies.mcsharding.demo.model.User;
 import org.apache.ibatis.annotations.*;
 
 /**

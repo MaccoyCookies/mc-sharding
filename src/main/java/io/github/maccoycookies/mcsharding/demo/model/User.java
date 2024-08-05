@@ -1,4 +1,4 @@
-package io.github.maccoycookies.mcsharding.demo;
+package io.github.maccoycookies.mcsharding.demo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

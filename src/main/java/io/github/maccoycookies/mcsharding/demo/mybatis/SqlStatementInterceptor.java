@@ -1,6 +1,5 @@
-package io.github.maccoycookies.mcsharding;
+package io.github.maccoycookies.mcsharding.demo.mybatis;
 
-import io.github.maccoycookies.mcsharding.demo.User;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.plugin.Interceptor;

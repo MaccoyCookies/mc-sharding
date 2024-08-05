@@ -1,4 +1,4 @@
-package io.github.maccoycookies.mcsharding;
+package io.github.maccoycookies.mcsharding.demo.engine;
 
 /**
  * Sharding context

@@ -1,6 +1,8 @@
-package io.github.maccoycookies.mcsharding;
+package io.github.maccoycookies.mcsharding.demo.mybatis;
 
-import io.github.maccoycookies.mcsharding.demo.User;
+import io.github.maccoycookies.mcsharding.demo.engine.ShardingContext;
+import io.github.maccoycookies.mcsharding.demo.engine.ShardingResult;
+import io.github.maccoycookies.mcsharding.demo.model.User;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;

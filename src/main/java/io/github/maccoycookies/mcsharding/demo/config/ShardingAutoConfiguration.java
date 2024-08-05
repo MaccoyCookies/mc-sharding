@@ -1,5 +1,6 @@
-package io.github.maccoycookies.mcsharding;
+package io.github.maccoycookies.mcsharding.demo.config;
 
+import io.github.maccoycookies.mcsharding.demo.datasource.ShardingDataSource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
