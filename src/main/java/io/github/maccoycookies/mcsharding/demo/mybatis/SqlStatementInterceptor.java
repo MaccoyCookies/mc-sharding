@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
  * @Author : maccoy(maccoy@foxmail.com)
  * @create 2024/8/4 11:29
  */
-@Component
 @Intercepts(
         @org.apache.ibatis.plugin.Signature(
                 type = StatementHandler.class,
