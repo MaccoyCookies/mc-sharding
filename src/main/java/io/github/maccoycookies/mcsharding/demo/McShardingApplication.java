@@ -27,29 +27,30 @@ public class McShardingApplication {
     @Bean
     ApplicationRunner applicationRunner() {
         return args -> {
+            for (int i = 1; i <= 30; i++) {
+                int id = i;
+                // System.out.println("===> 1. test insert ...");
+                // int inserted = userMapper.insert(new User(id, "maccoy", 19));
+                // System.out.println("===> inserted = " + inserted);
 
-            int id = 3;
+                System.out.println("===> 2. test find ...");
+                User user = userMapper.findById(id);
+                System.out.println("===> find = " + user);
 
-            System.out.println("===> 1. test insert ...");
-            int inserted = userMapper.insert(new User(id, "maccoy", 19));
-            System.out.println("===> inserted = " + inserted);
+                System.out.println("===> 3. test update ...");
+                user.setName("cookie");
+                int updated = userMapper.update(user);
+                System.out.println("===> updated = " + updated);
 
-            System.out.println("===> 2. test find ...");
-            User user = userMapper.findById(id);
-            System.out.println("===> find = " + user);
+                System.out.println("===> 4. test new find ...");
+                User user2 = userMapper.findById(id);
+                System.out.println("===> find = " + user2);
 
-            System.out.println("===> 3. test update ...");
-            user.setName("cookie");
-            int updated = userMapper.update(user);
-            System.out.println("===> updated = " + updated);
+                // System.out.println("===> 5. test delete ...");
+                // int deleted = userMapper.delete(user2.getId());
+                // System.out.println("===> deleted = " + deleted);
+            }
 
-            System.out.println("===> 4. test new find ...");
-            User user2 = userMapper.findById(id);
-            System.out.println("===> find = " + user2);
-
-            System.out.println("===> 5. test delete ...");
-            int deleted = userMapper.delete(user2.getId());
-            System.out.println("===> deleted = " + deleted);
         };
     }
 

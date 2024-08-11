@@ -2,7 +2,7 @@ package io.github.maccoycookies.mcsharding.demo.config;
 
 import io.github.maccoycookies.mcsharding.demo.datasource.ShardingDataSource;
 import io.github.maccoycookies.mcsharding.demo.engine.ShardingEngine;
-import io.github.maccoycookies.mcsharding.demo.engine.StandardEngine;
+import io.github.maccoycookies.mcsharding.demo.engine.StandardShardingEngine;
 import io.github.maccoycookies.mcsharding.demo.mybatis.SqlStatementInterceptor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ public class ShardingAutoConfiguration {
 
     @Bean
     public ShardingEngine shardingEngine(ShardingProperties shardingProperties) {
-        return new StandardEngine(shardingProperties);
+        return new StandardShardingEngine(shardingProperties);
     }
 
     @Bean

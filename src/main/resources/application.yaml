@@ -16,7 +16,7 @@ spring:
         actualDataNodes: ds0.user0,ds0.user1,ds0.user2,ds1.user0,ds1.user1,ds1.user2
         databaseStrategy:
           shardingColumn: id
-          algorithmExpression: ds${id % 2}
+          algorithmExpression: ds${id%2}
         tableStrategy:
           shardingColumn: id
-          algorithmExpression: user${id % 3}
+          algorithmExpression: user${id%3}

@@ -6,17 +6,19 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import io.github.maccoycookies.mcsharding.demo.config.ShardingProperties;
-import io.github.maccoycookies.mcsharding.demo.model.User;
-import io.github.maccoycookies.mcsharding.demo.mybatis.SqlStatementInterceptor;
 import io.github.maccoycookies.mcsharding.demo.strategy.HashShardingStrategy;
 import io.github.maccoycookies.mcsharding.demo.strategy.ShardingStrategy;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Description for this class
@@ -24,7 +26,7 @@ import java.util.Map;
  * @Author : maccoy(maccoy@foxmail.com)
  * @create 2024/8/5 23:41
  */
-public class StandardEngine implements ShardingEngine {
+public class StandardShardingEngine implements ShardingEngine {
 
     private final MultiValueMap<String, String> actualDatabaseNames = new LinkedMultiValueMap<>();
     private final MultiValueMap<String, String> actualTableNames = new LinkedMultiValueMap<>();
@@ -32,7 +34,7 @@ public class StandardEngine implements ShardingEngine {
     private final Map<String, ShardingStrategy> tableStrategies = new HashMap<>();
 
 
-    public StandardEngine(ShardingProperties shardingProperties) {
+    public StandardShardingEngine(ShardingProperties shardingProperties) {
         shardingProperties.getTables().forEach((table, tableProperties) -> {
             tableProperties.getActualDataNodes().forEach(actualDataNode -> {
                 String[] split = actualDataNode.split("\\.");
@@ -50,34 +52,34 @@ public class StandardEngine implements ShardingEngine {
     public ShardingResult sharding(String sql, Object[] args) {
 
         SQLStatement sqlStatement = SQLUtils.parseSingleMysqlStatement(sql);
+        String tableName;
+        Map<String, Object> shardingColumnsMap = new LinkedHashMap<>();
         if (sqlStatement instanceof SQLInsertStatement sqlInsertStatement) {
-            String tableName = sqlInsertStatement.getTableName().getSimpleName();
-            Map<String, Object> shardingColumnMap = new HashMap<>();
+            tableName = sqlInsertStatement.getTableName().getSimpleName();
             List<SQLExpr> columns = sqlInsertStatement.getColumns();
             for (int i = 0; i < columns.size(); i++) {
                 SQLIdentifierExpr columnExpr = (SQLIdentifierExpr) columns.get(i);
                 String columnNameStr = columnExpr.getSimpleName();
-                shardingColumnMap.put(columnNameStr, args[i]);
+                shardingColumnsMap.put(columnNameStr, args[i]);
             }
-            ShardingStrategy databaseStrategy = databaseStrategies.get(tableName);
-            String actualDatabase = databaseStrategy.doSharding(actualDatabaseNames.get(tableName), tableName, shardingColumnMap);
-            ShardingStrategy tableStrategy = tableStrategies.get(tableName);
-            String actualTable = tableStrategy.doSharding(actualTableNames.get(tableName), tableName, shardingColumnMap);
+        } else {
+            MySqlSchemaStatVisitor visitor = new MySqlSchemaStatVisitor();
+            visitor.setParameters(List.of(args));
+            sqlStatement.accept(visitor);
 
-            System.out.println("===> actual db.table = " + actualDatabase + "." + actualTable);
+            LinkedHashSet<SQLName> sqlNames = new LinkedHashSet<>(visitor.getOriginalTables());
+            if (sqlNames.size() > 1) {
+                throw new RuntimeException("not support multi table sharding: " + sqlNames);
+            }
+            tableName = sqlNames.iterator().next().getSimpleName();
+            System.out.println("===> visitor.getOriginalTables = " + tableName);
+            shardingColumnsMap = visitor.getConditions().stream().collect(Collectors.toMap(c -> c.getColumn().getName(), c -> c.getValues().get(0)));
         }
-
-
-        Object parameterObject = args[0];
-        System.out.println("===> getObject sql statement: " + sql);
-        int id = 0;
-        if (parameterObject instanceof User user) {
-            id = user.getId();
-        } else if (parameterObject instanceof Integer uid) {
-            id = uid;
-        }
-
-        return new ShardingResult(id % 2 == 0 ? "ds0" : "ds1", sql);
-
+        ShardingStrategy databaseStrategy = databaseStrategies.get(tableName);
+        String actualDatabase = databaseStrategy.doSharding(actualDatabaseNames.get(tableName), tableName, shardingColumnsMap);
+        ShardingStrategy tableStrategy = tableStrategies.get(tableName);
+        String actualTable = tableStrategy.doSharding(actualTableNames.get(tableName), tableName, shardingColumnsMap);
+        System.out.println("===> actual db.table = " + actualDatabase + "." + actualTable);
+        return new ShardingResult(actualDatabase, sql.replace(tableName, actualTable));
     }
 }
